@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyqt5 = "*"
+pandas = "*"
+scikit-learn = "*"
+xgboost = "*"
+seaborn = "*"
+matplotlib = "*"
+imblearn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
