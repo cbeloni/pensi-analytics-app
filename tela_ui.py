@@ -58,6 +58,15 @@ class Ui_MainWindow(object):
         self.labelImagem.setAlignment(QtCore.Qt.AlignCenter)
         self.matrizLayout.addWidget(self.labelImagem)
         self.tabWidget.addTab(self.tabMatriz, "Matriz de Confusão")
+               
+        # Tab 3: Resultado
+        self.tabFeature = QtWidgets.QWidget()
+        self.tabFeature.setObjectName("tabFeatureImportance")
+        self.featureLayout = QtWidgets.QVBoxLayout(self.tabFeature)
+        self.textFeature = QtWidgets.QPlainTextEdit(self.tabFeature)
+        self.textFeature.setObjectName("textFeatureImportance")
+        self.featureLayout.addWidget(self.textFeature)
+        self.tabWidget.addTab(self.tabFeature, "Feature Importance")
 
         self.mainLayout.addWidget(self.tabWidget)
 

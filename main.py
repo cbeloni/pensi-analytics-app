@@ -20,12 +20,14 @@ class MainApp(QtWidgets.QMainWindow):
         variavel_alvo = self.ui.textVariavelAlvo.text()
         csv_path = self.ui.textCsvPath.text()
         resultado = ""
+        feature_importance = ""
         try:
-            resultado = processar(csv_path, variavel_alvo)        
+            resultado, feature_importance = processar(csv_path, variavel_alvo)        
         except Exception as e:
             resultado = f"Erro: {e}"
         
         self.ui.textResultado.setPlainText(resultado)
+        self.ui.textFeature.setPlainText(feature_importance)
         pixmap = QPixmap("confusion_matriz.png")
         self.ui.labelImagem.setPixmap(pixmap)
         self.ui.labelImagem.setScaledContents(True)

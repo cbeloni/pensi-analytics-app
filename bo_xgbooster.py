@@ -43,7 +43,10 @@ def processar(file, alvo):
 
     NPV = tn / (tn + fn)
     retorno += f'NPV: {NPV} \n'
-    return retorno
+    
+    feature_importance_df = get_feature_importance(xgb_model, X)
+    
+    return (retorno, feature_importance_df,)
     
 def over_sampling(X_train, y_train):    
     from imblearn.over_sampling import SMOTE
@@ -68,6 +71,22 @@ def matriz_confusao(y_test, y_pred):
     plt.ylabel('Actual')
     plt.savefig('confusion_matriz.png') 
     plt.close()
+
+def get_feature_importance(xgb_model, X):    
+    feature_importances = xgb_model.feature_importances_
+    feature_importance_df = pd.DataFrame({'Feature': X.columns, 'Importance': feature_importances})
+    feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
+    features_formated = ""
+
+    linhas = feature_importance_df.to_string(index=False).split('\n')[1:]
+
+    for linha in linhas:
+        linha = linha.strip() 
+        if linha:
+            features_formated += linha + "\n"
+    
+    return features_formated
+    
     
 if __name__ == "__main__":
     file = '/home/caue/Documentos/pensi_projeto/datasaude-ml/Regressao/dados_treino_v8_inverse.csv'
