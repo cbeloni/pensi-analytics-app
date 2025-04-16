@@ -53,10 +53,10 @@ class Ui_MainWindow(object):
         self.tabMatriz = QtWidgets.QWidget()
         self.tabMatriz.setObjectName("tabMatriz")
         self.matrizLayout = QtWidgets.QVBoxLayout(self.tabMatriz)
-        self.labelImagem = QtWidgets.QLabel(self.tabMatriz)
-        self.labelImagem.setObjectName("labelImagem")
-        self.labelImagem.setAlignment(QtCore.Qt.AlignCenter)
-        self.matrizLayout.addWidget(self.labelImagem)
+        self.labelMatriz = QtWidgets.QLabel(self.tabMatriz)
+        self.labelMatriz.setObjectName("labelMatriz")
+        self.labelMatriz.setAlignment(QtCore.Qt.AlignCenter)
+        self.matrizLayout.addWidget(self.labelMatriz)
         self.tabWidget.addTab(self.tabMatriz, "Matriz de Confusão")
                
         # Tab 3: Resultado
@@ -69,6 +69,16 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tabFeature, "Feature Importance")
 
         self.mainLayout.addWidget(self.tabWidget)
+                
+        # Tab 4: Curva ROC
+        self.tabRoc = QtWidgets.QWidget()
+        self.tabRoc.setObjectName("tabRoc")
+        self.rocLayout = QtWidgets.QVBoxLayout(self.tabRoc)
+        self.labelRoc = QtWidgets.QLabel(self.tabRoc)
+        self.labelRoc.setObjectName("labelRoc")
+        self.labelRoc.setAlignment(QtCore.Qt.AlignCenter)
+        self.rocLayout.addWidget(self.labelRoc)
+        self.tabWidget.addTab(self.tabRoc, "Curva ROC")
 
         # Progress bar
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)

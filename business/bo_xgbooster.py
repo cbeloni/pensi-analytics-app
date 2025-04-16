@@ -4,6 +4,7 @@ from xgboost import XGBClassifier
 from sklearn import metrics
 import seaborn as sn
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, roc_auc_score
 
 def processar(file, alvo, progress):
     df = pd.read_csv(file, sep='|')
@@ -28,9 +29,13 @@ def processar(file, alvo, progress):
     xgb_model.fit(X_train, y_train)
     y_pred=xgb_model.predict(X_test)
     
-    progress.set_progress(80)
+    progress.set_progress(70)
     
     matriz_confusao(y_test, y_pred)
+    
+    
+    progress.set_progress(80)
+    curva_roc(y_test, y_pred)
     
     progress.set_progress(90)
     retorno = f'Accuracy: {metrics.accuracy_score(y_test, y_pred)} \n'
@@ -75,6 +80,20 @@ def matriz_confusao(y_test, y_pred):
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.savefig('confusion_matriz.png') 
+    plt.close()
+    
+def curva_roc(y_test, y_pred):  
+    fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+    roc_auc = roc_auc_score(y_test, y_pred)
+    plt.figure(figsize=(10, 7))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.savefig('curva_roc.png') 
     plt.close()
 
 def get_feature_importance(xgb_model, X):    

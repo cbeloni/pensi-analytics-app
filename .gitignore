@@ -1,5 +1,6 @@
 pensi-analytics-app.zip
 __pycache__/
 *.pyc
-__pycache__/tela_ui.cpython-312.pyc
 confusion_matriz.png
+curva_roc.png
+__pycache__/tela_ui.cpython-312.pyc

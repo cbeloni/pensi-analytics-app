@@ -35,9 +35,14 @@ class MainApp(QtWidgets.QMainWindow):
         
         self.ui.textResultado.setPlainText(resultado)
         self.ui.textFeature.setPlainText(feature_importance)
+        
         pixmap = QPixmap("confusion_matriz.png")
-        self.ui.labelImagem.setPixmap(pixmap)
-        self.ui.labelImagem.setScaledContents(True)
+        self.ui.labelMatriz.setPixmap(pixmap)
+        self.ui.labelMatriz.setScaledContents(True)
+        
+        pixmap = QPixmap("curva_roc.png")
+        self.ui.labelRoc.setPixmap(pixmap)
+        self.ui.labelRoc.setScaledContents(True)
         
         self.ui.pushButton.setEnabled(True)
         
