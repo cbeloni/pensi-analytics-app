@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1200, 900)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
 
         # Progress bar
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setProperty("value", 24)
+        self.progressBar.setTextVisible(False)  # Hide the percentage text
         self.progressBar.setObjectName("progressBar")
         self.progressBar.setVisible(False)
         self.mainLayout.addWidget(self.progressBar)

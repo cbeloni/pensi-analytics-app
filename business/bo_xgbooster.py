@@ -5,10 +5,10 @@ from sklearn import metrics
 import seaborn as sn
 import matplotlib.pyplot as plt
 
-def processar(file, alvo):
+def processar(file, alvo, progress):
     df = pd.read_csv(file, sep='|')
     #df.head()
-
+    progress.set_progress(10)
     df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int')
 
     headers = list(df.columns)[2:]
@@ -16,18 +16,23 @@ def processar(file, alvo):
     y = df[alvo]  # internacao
     
     normalizar(X)
-    
+    progress.set_progress(20)
     X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.25,random_state=0)
 
+    progress.set_progress(30)
     X_train, y_train = over_sampling(X_train, y_train)
-        
+    
+    progress.set_progress(50)
     best_params = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}     
     xgb_model = XGBClassifier(**best_params, importance_type='weight')
     xgb_model.fit(X_train, y_train)
     y_pred=xgb_model.predict(X_test)
     
+    progress.set_progress(80)
+    
     matriz_confusao(y_test, y_pred)
     
+    progress.set_progress(90)
     retorno = f'Accuracy: {metrics.accuracy_score(y_test, y_pred)} \n'
 
     recall = metrics.recall_score(y_test, y_pred)
@@ -45,7 +50,7 @@ def processar(file, alvo):
     retorno += f'NPV: {NPV} \n'
     
     feature_importance_df = get_feature_importance(xgb_model, X)
-    
+    progress.set_progress(100)
     return (retorno, feature_importance_df,)
     
 def over_sampling(X_train, y_train):    

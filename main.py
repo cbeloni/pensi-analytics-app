@@ -1,7 +1,9 @@
 from PyQt5 import QtWidgets
 from tela_ui import Ui_MainWindow
-from bo_xgbooster import processar
+from business.bo_xgbooster import processar
 from PyQt5.QtGui import QPixmap
+
+from utils.progress import Progress
 
 
 class MainApp(QtWidgets.QMainWindow):
@@ -17,12 +19,17 @@ class MainApp(QtWidgets.QMainWindow):
 
     def processar(self):
         print("Botão 'Processar' foi clicado!")
+        
+        self.progress = Progress(self.ui.progressBar)
+        self.progress.set_progress(0)
+        self.ui.pushButton.setEnabled(False)
+        
         variavel_alvo = self.ui.textVariavelAlvo.text()
         csv_path = self.ui.textCsvPath.text()
         resultado = ""
         feature_importance = ""
         try:
-            resultado, feature_importance = processar(csv_path, variavel_alvo)        
+            resultado, feature_importance = processar(csv_path, variavel_alvo, self.progress)        
         except Exception as e:
             resultado = f"Erro: {e}"
         
@@ -31,6 +38,8 @@ class MainApp(QtWidgets.QMainWindow):
         pixmap = QPixmap("confusion_matriz.png")
         self.ui.labelImagem.setPixmap(pixmap)
         self.ui.labelImagem.setScaledContents(True)
+        
+        self.ui.pushButton.setEnabled(True)
         
             
     def select_csv_file(self):
