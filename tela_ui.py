@@ -23,6 +23,21 @@ class Ui_MainWindow(object):
         self.csvLayout.addWidget(self.buttonCsv)
 
         self.mainLayout.addLayout(self.csvLayout)
+        
+        # Dropdown para seleção do modelo
+        self.modelLayout = QtWidgets.QHBoxLayout()
+        self.labelModelo = QtWidgets.QLabel(self.centralwidget)
+        self.labelModelo.setObjectName("labelModelo")
+        self.modelLayout.addWidget(self.labelModelo)
+
+        self.comboBoxModelo = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBoxModelo.setObjectName("comboBoxModelo")
+        self.comboBoxModelo.addItems(["XGBoost", "Regressão Logística"])
+        self.comboBoxModelo.setFixedWidth(180)  # Diminui o tamanho do comboBox
+        self.modelLayout.addWidget(self.comboBoxModelo)
+        self.modelLayout.addStretch()  # Adiciona um espaçador para alinhar à esquerda
+
+        self.mainLayout.addLayout(self.modelLayout)
 
         # Target variable layout
         self.targetLayout = QtWidgets.QVBoxLayout()
@@ -113,12 +128,17 @@ class Ui_MainWindow(object):
         self.actionSair.triggered.connect(MainWindow.close)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+
+        
+
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Pensi Analytics APP"))
         self.buttonCsv.setText(_translate("MainWindow", "Selecionar CSV"))
         self.pushButton.setText(_translate("MainWindow", "Processar"))
         self.label_2.setText(_translate("MainWindow", "Defina a variável alvo"))
+        self.labelModelo.setText(_translate("MainWindow", "Seleciona o Modelo"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabResultado), _translate("MainWindow", "Resultado"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMatriz), _translate("MainWindow", "Matriz de Confusão"))
         self.menuSair.setTitle(_translate("MainWindow", "Configurações"))

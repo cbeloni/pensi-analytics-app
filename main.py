@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 from tela_ui import Ui_MainWindow
-from business.bo_xgbooster import processar
+from business.bo_model_factory import modelo_factory
 from PyQt5.QtGui import QPixmap
 
 from utils.progress import Progress
@@ -29,7 +29,8 @@ class MainApp(QtWidgets.QMainWindow):
         resultado = ""
         feature_importance = ""
         try:
-            resultado, feature_importance = processar(csv_path, variavel_alvo, self.progress)        
+            model = modelo_factory(self.ui.comboBoxModelo.currentText())
+            resultado, feature_importance = model.processar(csv_path, variavel_alvo, self.progress)        
         except Exception as e:
             resultado = f"Erro: {e}"
         

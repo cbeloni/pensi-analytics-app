@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from xgboost import XGBClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 import seaborn as sn
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ from sklearn.metrics import roc_curve, roc_auc_score
 
 from business.bo_model import ModeloBase
 
-class XgbBooster(ModeloBase):
+class RegressaoLogistica(ModeloBase):
 
     def over_sampling(self, X_train, y_train):    
         from imblearn.over_sampling import SMOTE
@@ -48,20 +48,8 @@ class XgbBooster(ModeloBase):
         plt.savefig('curva_roc.png') 
         plt.close()
 
-    def get_feature_importance(self, xgb_model, X):    
-        feature_importances = xgb_model.feature_importances_
-        feature_importance_df = pd.DataFrame({'Feature': X.columns, 'Importance': feature_importances})
-        feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
-        features_formated = ""
-
-        linhas = feature_importance_df.to_string(index=False).split('\n')[1:]
-
-        for linha in linhas:
-            linha = linha.strip() 
-            if linha:
-                features_formated += linha + "\n"
-        
-        return features_formated
+    def get_feature_importance(self, model, X):    
+        return "Não disponível para Regressão Logística"
    
     def processar(self, file, alvo, progress):
         df = pd.read_csv(file, sep='|')
@@ -81,8 +69,7 @@ class XgbBooster(ModeloBase):
         X_train, y_train = self.over_sampling(X_train, y_train)
         
         progress.set_progress(50)
-        best_params = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}     
-        xgb_model = XGBClassifier(**best_params, importance_type='weight')
+        xgb_model= LogisticRegression(max_iter=5000)
         xgb_model.fit(X_train, y_train)
         y_pred=xgb_model.predict(X_test)
         
@@ -121,5 +108,5 @@ if __name__ == "__main__":
     file = '/home/caue/Documentos/pensi_projeto/datasaude-ml/Regressao/dados_treino_v8_inverse.csv'
     alvo = 'internacao'
     
-    retorno = XgbBooster().processar(file, alvo)
+    retorno = RegressaoLogistica().processar(file, alvo)
     print(retorno)
