@@ -3,7 +3,7 @@ from tela_ui import Ui_MainWindow
 from business.bo_model_factory import modelo_factory
 from PyQt5.QtGui import QPixmap
 
-from utils.progress import Progress
+from utils.progress_modal import ProgressModal
 
 
 class MainApp(QtWidgets.QMainWindow):
@@ -20,8 +20,8 @@ class MainApp(QtWidgets.QMainWindow):
     def processar(self):
         print("Botão 'Processar' foi clicado!")
         
-        self.progress = Progress(self.ui.progressBar)
-        self.progress.set_progress(0)
+        progress = ProgressModal()
+        progress.show()
         self.ui.pushButton.setEnabled(False)
         
         variavel_alvo = self.ui.textVariavelAlvo.text()
@@ -30,10 +30,11 @@ class MainApp(QtWidgets.QMainWindow):
         feature_importance = ""
         try:
             model = modelo_factory(self.ui.comboBoxModelo.currentText())
-            resultado, feature_importance = model.processar(csv_path, variavel_alvo, self.progress)        
+            resultado, feature_importance = model.processar(csv_path, variavel_alvo, progress)        
         except Exception as e:
             resultado = f"Erro: {e}"
         
+        progress.finalizar()
         self.ui.textResultado.setPlainText(resultado)
         self.ui.textFeature.setPlainText(feature_importance)
         

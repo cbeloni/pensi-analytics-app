@@ -96,11 +96,11 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tabRoc, "Curva ROC")
 
         # Progress bar
-        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setTextVisible(False)  # Hide the percentage text
-        self.progressBar.setObjectName("progressBar")
-        self.progressBar.setVisible(False)
-        self.mainLayout.addWidget(self.progressBar)
+        # self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        # self.progressBar.setTextVisible(False)  # Hide the percentage text
+        # self.progressBar.setObjectName("progressBar")
+        # self.progressBar.setVisible(False)
+        # self.mainLayout.addWidget(self.progressBar)
 
         # Process button
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)

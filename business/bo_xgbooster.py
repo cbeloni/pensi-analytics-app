@@ -1,9 +1,11 @@
+import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn import metrics
 
 from business.bo_model import ModeloBase
+from PyQt5.QtWidgets import QApplication
 
 class XgbBooster(ModeloBase):
 
@@ -25,7 +27,7 @@ class XgbBooster(ModeloBase):
     def processar(self, file, alvo, progress):
         df = pd.read_csv(file, sep='|')
         #df.head()
-        progress.set_progress(10)
+        progress.set_progress(10, "Carregando dados...")
         df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int')
 
         headers = list(df.columns)[2:]
@@ -33,27 +35,27 @@ class XgbBooster(ModeloBase):
         y = df[alvo]  # internacao
         
         self.normalizar(X)
-        progress.set_progress(20)
+        progress.set_progress(20, "Normalizando dados...")
         X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.25,random_state=0)
 
-        progress.set_progress(30)
+        progress.set_progress(30, "Dividindo dados em treino e teste...")
         X_train, y_train = self.over_sampling(X_train, y_train)
         
-        progress.set_progress(50)
+        progress.set_progress(50,   "Aplicando over-sampling...")
         best_params = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}     
         xgb_model = XGBClassifier(**best_params, importance_type='weight')
         xgb_model.fit(X_train, y_train)
         y_pred=xgb_model.predict(X_test)
         
-        progress.set_progress(70)
+        progress.set_progress(70, "Treinando modelo XGBoost...")
         
         self.matriz_confusao(y_test, y_pred)
         
         
-        progress.set_progress(80)
+        progress.set_progress(80,   "Gerando matriz de confusão...")
         self.curva_roc(y_test, y_pred)
         
-        progress.set_progress(90)
+        progress.set_progress(90,  "Gerando curva ROC...")
         retorno = f'Accuracy: {metrics.accuracy_score(y_test, y_pred)} \n'
 
         recall = metrics.recall_score(y_test, y_pred)
@@ -71,7 +73,7 @@ class XgbBooster(ModeloBase):
         retorno += f'NPV: {NPV} \n'
         
         feature_importance_df = self.get_feature_importance(xgb_model, X)
-        progress.set_progress(100)
+        progress.set_progress(100, "Processamento concluído!")
         return (retorno, feature_importance_df,)
         
  
