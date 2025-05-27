@@ -34,28 +34,27 @@ class XgbBooster(ModeloBase):
         X = df[headers]
         y = df[alvo]  # internacao
         
+        progress.set_progress(10, "Normalizando dados...")
         self.normalizar(X)
-        progress.set_progress(20, "Normalizando dados...")
+        
+        progress.set_progress(10, "Dividindo dados em treino e teste...")
         X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.25,random_state=0)
 
-        progress.set_progress(30, "Dividindo dados em treino e teste...")
+        progress.set_progress(10,   "Aplicando over-sampling...")
         X_train, y_train = self.over_sampling(X_train, y_train)
         
-        progress.set_progress(50,   "Aplicando over-sampling...")
+        progress.set_progress(20, "Treinando modelo XGBoost...")
         best_params = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}     
         xgb_model = XGBClassifier(**best_params, importance_type='weight')
         xgb_model.fit(X_train, y_train)
         y_pred=xgb_model.predict(X_test)
-        
-        progress.set_progress(70, "Treinando modelo XGBoost...")
-        
+                
+        progress.set_progress(10,   "Gerando matriz de confusão...")
         self.matriz_confusao(y_test, y_pred)
-        
-        
-        progress.set_progress(80,   "Gerando matriz de confusão...")
+                
+        progress.set_progress(20,  "Gerando curva ROC...")
         self.curva_roc(y_test, y_pred)
         
-        progress.set_progress(90,  "Gerando curva ROC...")
         retorno = f'Accuracy: {metrics.accuracy_score(y_test, y_pred)} \n'
 
         recall = metrics.recall_score(y_test, y_pred)

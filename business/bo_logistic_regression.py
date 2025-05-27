@@ -2,12 +2,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
-import seaborn as sn
-import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, roc_auc_score
 
 from business.bo_model import ModeloBase
-from PyQt5.QtWidgets import QApplication
 
 class RegressaoLogistica(ModeloBase):
 
@@ -15,36 +11,36 @@ class RegressaoLogistica(ModeloBase):
         return "Não disponível para Regressão Logística"
    
     def processar(self, file, alvo, progress):
+        progress.set_progress(10, "Carregando dados...")
         df = pd.read_csv(file, sep='|')
         #df.head()
-        progress.set_progress(10, "Carregando dados...")
         df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int')
 
         headers = list(df.columns)[2:]
         X = df[headers]
         y = df[alvo]  # internacao
         
+        progress.set_progress(10, "Normalizando dados...")
         self.normalizar(X)
-        progress.set_progress(20, "Normalizando dados...")
+        
+        progress.set_progress(10, "Dividindo dados em treino e teste...")
         X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.25,random_state=0)
 
-        progress.set_progress(30, "Dividindo dados em treino e teste...")
+        progress.set_progress(10,   "Aplicando over-sampling...")
         X_train, y_train = self.over_sampling(X_train, y_train)
         
-        progress.set_progress(50, "Aplicando over-sampling...")
-        xgb_model= LogisticRegression(max_iter=5000)
+        progress.set_progress(20, "Treinando modelo Regressão logística...")
+        xgb_model = LogisticRegression()
         xgb_model.fit(X_train, y_train)
         y_pred=xgb_model.predict(X_test)
         
-        progress.set_progress(70, "Treinando modelo...")
         
+        progress.set_progress(20,   "Gerando matriz de confusão...")
         self.matriz_confusao(y_test, y_pred)
-        
-        
-        progress.set_progress(80, "Gerando matriz de confusão...")
+                
+        progress.set_progress(10,  "Gerando curva ROC...")
         self.curva_roc(y_test, y_pred)
         
-        progress.set_progress(90,   "Gerando curva ROC...")
         retorno = f'Accuracy: {metrics.accuracy_score(y_test, y_pred)} \n'
 
         recall = metrics.recall_score(y_test, y_pred)
@@ -71,5 +67,5 @@ if __name__ == "__main__":
     file = '/home/caue/Documentos/pensi_projeto/datasaude-ml/Regressao/dados_treino_v8_inverse.csv'
     alvo = 'internacao'
     
-    retorno = RegressaoLogistica().processar(file, alvo)
+    retorno = XgbBooster().processar(file, alvo)
     print(retorno)
