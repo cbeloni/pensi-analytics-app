@@ -67,5 +67,5 @@ if __name__ == "__main__":
     file = '/home/caue/Documentos/pensi_projeto/datasaude-ml/Regressao/dados_treino_v8_inverse.csv'
     alvo = 'internacao'
     
-    retorno = XgbBooster().processar(file, alvo)
+    retorno = RegressaoLogistica().processar(file, alvo)
     print(retorno)
