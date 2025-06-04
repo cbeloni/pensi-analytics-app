@@ -1,61 +1,109 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5 import QtCore, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        # Configurações iniciais da janela principal
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 900)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        # Main layout
-        self.mainLayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        # Widget de abas principal
+        self.mainTabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.mainTabWidget.setObjectName("mainTabWidget")
 
-        # CSV selection layout
+        # ==== ABA: Classificação ====
+        self.setupClassificacaoTab()
+
+        # ==== ABA: Temporal ====
+        self.setupTemporalTab()
+
+        # Adiciona as abas ao widget principal
+        self.mainTabWidget.addTab(self.tabClassificacao, "Classificação")
+        self.mainTabWidget.addTab(self.tabTemporal, "Temporal")
+
+        # Centraliza o widget de abas
+        layout = QtWidgets.QVBoxLayout(self.centralwidget)
+        layout.addWidget(self.mainTabWidget)
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        # Menu superior e barra de status
+        self.setupMenu(MainWindow)
+
+        # Tradução de textos e conexão de ações
+        self.retranslateUi(MainWindow)
+        self.actionSair.triggered.connect(MainWindow.close)  # Fecha app ao clicar em "Sair"
+
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def setupClassificacaoTab(self):
+        """Configura a aba de Classificação"""
+        self.tabClassificacao = QtWidgets.QWidget()
+        self.tabClassificacao.setObjectName("tabClassificacao")
+        self.classificacaoLayout = QtWidgets.QVBoxLayout(self.tabClassificacao)
+
+        # Layout principal da aba
+        self.mainLayout = QtWidgets.QVBoxLayout()
+
+        # ==== Seleção de CSV ====
         self.csvLayout = QtWidgets.QHBoxLayout()
-        self.textCsvPath = QtWidgets.QLineEdit(self.centralwidget)
+        self.textCsvPath = QtWidgets.QLineEdit(self.tabClassificacao)
         self.textCsvPath.setObjectName("textCsvPath")
-        self.csvLayout.addWidget(self.textCsvPath)
-
-        self.buttonCsv = QtWidgets.QPushButton(self.centralwidget)
+        self.buttonCsv = QtWidgets.QPushButton(self.tabClassificacao)
         self.buttonCsv.setObjectName("buttonCsv")
+        self.csvLayout.addWidget(self.textCsvPath)
         self.csvLayout.addWidget(self.buttonCsv)
-
         self.mainLayout.addLayout(self.csvLayout)
-        
-        # Dropdown para seleção do modelo
-        self.modelLayout = QtWidgets.QHBoxLayout()
-        self.labelModelo = QtWidgets.QLabel(self.centralwidget)
-        self.labelModelo.setObjectName("labelModelo")
-        self.modelLayout.addWidget(self.labelModelo)
 
-        self.comboBoxModelo = QtWidgets.QComboBox(self.centralwidget)
+        # ==== Seleção do Modelo ====
+        self.modelLayout = QtWidgets.QHBoxLayout()
+        self.labelModelo = QtWidgets.QLabel(self.tabClassificacao)
+        self.labelModelo.setObjectName("labelModelo")
+        self.comboBoxModelo = QtWidgets.QComboBox(self.tabClassificacao)
         self.comboBoxModelo.setObjectName("comboBoxModelo")
         self.comboBoxModelo.addItems(["XGBoost", "Regressão Logística"])
-        self.comboBoxModelo.setFixedWidth(180)  # Diminui o tamanho do comboBox
+        self.comboBoxModelo.setFixedWidth(180)
+        self.modelLayout.addWidget(self.labelModelo)
         self.modelLayout.addWidget(self.comboBoxModelo)
-        self.modelLayout.addStretch()  # Adiciona um espaçador para alinhar à esquerda
-
+        self.modelLayout.addStretch()
         self.mainLayout.addLayout(self.modelLayout)
 
-        # Target variable layout
+        # ==== Variável Alvo ====
         self.targetLayout = QtWidgets.QVBoxLayout()
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2 = QtWidgets.QLabel(self.tabClassificacao)
         self.label_2.setObjectName("label_2")
-        self.targetLayout.addWidget(self.label_2)
-
-        self.textVariavelAlvo = QtWidgets.QLineEdit(self.centralwidget)
+        self.textVariavelAlvo = QtWidgets.QLineEdit(self.tabClassificacao)
         self.textVariavelAlvo.setObjectName("textVariavelAlvo")
+        self.targetLayout.addWidget(self.label_2)
         self.targetLayout.addWidget(self.textVariavelAlvo)
-
         self.mainLayout.addLayout(self.targetLayout)
 
-        # Tab widget for results
-        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        # ==== Sub-Abas de Resultados ====
+        self.tabWidget = QtWidgets.QTabWidget(self.tabClassificacao)
         self.tabWidget.setObjectName("tabWidget")
 
-        # Tab 1: Resultado
+        # Sub-aba: Resultado
+        self.setupSubTabResultado()
+        # Sub-aba: Matriz de Confusão
+        self.setupSubTabMatriz()
+        # Sub-aba: Feature Importance
+        self.setupSubTabFeature()
+        # Sub-aba: Curva ROC
+        self.setupSubTabRoc()
+
+        self.mainLayout.addWidget(self.tabWidget)
+
+        # ==== Botão de Processamento ====
+        self.pushButton = QtWidgets.QPushButton(self.tabClassificacao)
+        self.pushButton.setObjectName("pushButton")
+        self.mainLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+
+        # Finaliza layout da aba
+        self.classificacaoLayout.addLayout(self.mainLayout)
+        self.tabClassificacao.setLayout(self.classificacaoLayout)
+
+    def setupSubTabResultado(self):
         self.tabResultado = QtWidgets.QWidget()
         self.tabResultado.setObjectName("tabResultado")
         self.resultLayout = QtWidgets.QVBoxLayout(self.tabResultado)
@@ -64,17 +112,17 @@ class Ui_MainWindow(object):
         self.resultLayout.addWidget(self.textResultado)
         self.tabWidget.addTab(self.tabResultado, "Resultado")
 
-        # Tab 2: Matriz de Confusão
+    def setupSubTabMatriz(self):
         self.tabMatriz = QtWidgets.QWidget()
         self.tabMatriz.setObjectName("tabMatriz")
         self.matrizLayout = QtWidgets.QVBoxLayout(self.tabMatriz)
         self.labelMatriz = QtWidgets.QLabel(self.tabMatriz)
         self.labelMatriz.setObjectName("labelMatriz")
-        self.labelMatriz.setAlignment(QtCore.Qt.AlignCenter)
+        self.labelMatriz.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.matrizLayout.addWidget(self.labelMatriz)
         self.tabWidget.addTab(self.tabMatriz, "Matriz de Confusão")
-               
-        # Tab 3: Resultado
+
+    def setupSubTabFeature(self):
         self.tabFeature = QtWidgets.QWidget()
         self.tabFeature.setObjectName("tabFeatureImportance")
         self.featureLayout = QtWidgets.QVBoxLayout(self.tabFeature)
@@ -83,69 +131,68 @@ class Ui_MainWindow(object):
         self.featureLayout.addWidget(self.textFeature)
         self.tabWidget.addTab(self.tabFeature, "Feature Importance")
 
-        self.mainLayout.addWidget(self.tabWidget)
-                
-        # Tab 4: Curva ROC
+    def setupSubTabRoc(self):
         self.tabRoc = QtWidgets.QWidget()
         self.tabRoc.setObjectName("tabRoc")
         self.rocLayout = QtWidgets.QVBoxLayout(self.tabRoc)
         self.labelRoc = QtWidgets.QLabel(self.tabRoc)
         self.labelRoc.setObjectName("labelRoc")
-        self.labelRoc.setAlignment(QtCore.Qt.AlignCenter)
+        self.labelRoc.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.rocLayout.addWidget(self.labelRoc)
         self.tabWidget.addTab(self.tabRoc, "Curva ROC")
 
-        # Progress bar
-        # self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        # self.progressBar.setTextVisible(False)  # Hide the percentage text
-        # self.progressBar.setObjectName("progressBar")
-        # self.progressBar.setVisible(False)
-        # self.mainLayout.addWidget(self.progressBar)
+    def setupTemporalTab(self):
+        """Configura a aba de Temporal"""
+        self.tabTemporal = QtWidgets.QWidget()
+        self.tabTemporal.setObjectName("tabTemporal")
+        self.temporalLayout = QtWidgets.QVBoxLayout(self.tabTemporal)
+        self.labelTemporal = QtWidgets.QLabel("Conteúdo da Aba Temporal", self.tabTemporal)
+        self.labelTemporal.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.temporalLayout.addWidget(self.labelTemporal)
+        self.tabTemporal.setLayout(self.temporalLayout)
 
-        # Process button
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setObjectName("pushButton")
-        self.mainLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignCenter)
-
-        MainWindow.setCentralWidget(self.centralwidget)
-
-        # Menu bar
+    def setupMenu(self, MainWindow):
+        """Configura o menu superior e barra de status"""
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
         self.menubar.setObjectName("menubar")
+
         self.menuSair = QtWidgets.QMenu(self.menubar)
         self.menuSair.setObjectName("menuSair")
+
         MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
         self.actionSair = QtWidgets.QAction(MainWindow)
         self.actionSair.setObjectName("actionSair")
+
         self.menuSair.addAction(self.actionSair)
         self.menubar.addAction(self.menuSair.menuAction())
 
-        self.retranslateUi(MainWindow)
-        self.actionSair.triggered.connect(MainWindow.close)  # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-
-        
-
-
     def retranslateUi(self, MainWindow):
+        """Define textos dos widgets"""
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Pensi Analytics APP"))
         self.buttonCsv.setText(_translate("MainWindow", "Selecionar CSV"))
         self.pushButton.setText(_translate("MainWindow", "Processar"))
         self.label_2.setText(_translate("MainWindow", "Defina a variável alvo"))
         self.labelModelo.setText(_translate("MainWindow", "Seleciona o Modelo"))
+
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabResultado), _translate("MainWindow", "Resultado"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMatriz), _translate("MainWindow", "Matriz de Confusão"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabFeature), _translate("MainWindow", "Feature Importance"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabRoc), _translate("MainWindow", "Curva ROC"))
+
+        self.mainTabWidget.setTabText(self.mainTabWidget.indexOf(self.tabClassificacao), _translate("MainWindow", "Classificação"))
+        self.mainTabWidget.setTabText(self.mainTabWidget.indexOf(self.tabTemporal), _translate("MainWindow", "Temporal"))
+
         self.menuSair.setTitle(_translate("MainWindow", "Configurações"))
         self.actionSair.setText(_translate("MainWindow", "Sair"))
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

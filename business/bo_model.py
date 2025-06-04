@@ -22,7 +22,7 @@ class ModeloBase(ABC):
         
     def matriz_confusao(self, y_test, y_pred):
         confusion_matrix = pd.crosstab(y_test, y_pred, rownames=['Actual'], colnames=['Predicted'])
-        plt.figure(figsize=(10, 7))
+        plt.figure(figsize=(6, 4))
         sn.heatmap(confusion_matrix, annot=True, annot_kws={"size": 10}, fmt='d')
         plt.title('Confusion Matrix')
         plt.xlabel('Predicted')
@@ -33,7 +33,7 @@ class ModeloBase(ABC):
     def curva_roc(self, y_test, y_pred):  
         fpr, tpr, thresholds = roc_curve(y_test, y_pred)
         roc_auc = roc_auc_score(y_test, y_pred)
-        plt.figure(figsize=(10, 7))
+        plt.figure(figsize=(6, 4))
         plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
         plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
         plt.xlim([0.0, 1.0])
