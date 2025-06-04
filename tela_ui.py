@@ -1,6 +1,11 @@
 from PyQt5 import QtCore, QtWidgets
+from tela.temporal_ui import Ui_TemporalWindow
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(Ui_TemporalWindow):
+    def __init__(self):
+        super().__init__()
+        Ui_TemporalWindow.__init__(self)
+    
     def setupUi(self, MainWindow):
         # Configurações iniciais da janela principal
         MainWindow.setObjectName("MainWindow")
@@ -140,16 +145,6 @@ class Ui_MainWindow(object):
         self.labelRoc.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.rocLayout.addWidget(self.labelRoc)
         self.tabWidget.addTab(self.tabRoc, "Curva ROC")
-
-    def setupTemporalTab(self):
-        """Configura a aba de Temporal"""
-        self.tabTemporal = QtWidgets.QWidget()
-        self.tabTemporal.setObjectName("tabTemporal")
-        self.temporalLayout = QtWidgets.QVBoxLayout(self.tabTemporal)
-        self.labelTemporal = QtWidgets.QLabel("Conteúdo da Aba Temporal", self.tabTemporal)
-        self.labelTemporal.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.temporalLayout.addWidget(self.labelTemporal)
-        self.tabTemporal.setLayout(self.temporalLayout)
 
     def setupMenu(self, MainWindow):
         """Configura o menu superior e barra de status"""
