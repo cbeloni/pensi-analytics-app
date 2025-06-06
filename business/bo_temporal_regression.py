@@ -1,0 +1,38 @@
+import pandas as pd
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+def load_df(file_path: str):
+    df = pd.read_csv(file_path, sep='|')
+    return df
+
+def treinar_modelo(file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade: int): 
+    df = load_df(file_path)
+    # print(df.head().to_dict(orient='records'))
+    df['DT_ATENDIMENTO'] = pd.to_datetime(df['DT_ATENDIMENTO'])
+    df.set_index('DT_ATENDIMENTO', inplace=True)
+    ts = df['ATENDIMENTOS']
+    model = ExponentialSmoothing(ts, trend='add', seasonal='add', seasonal_periods=qtd_dias_sazonalidade).fit()
+    forecast = model.forecast(steps=qtd_dias_previsao)
+    forecast_df = pd.DataFrame({
+        'data': forecast.index.strftime('%Y-%m-%d'),
+        'valor_previsao': forecast.values
+    })
+    result = []
+    for idx, row in df.iterrows():
+        try:
+            data = idx.strftime('%Y-%m-%d')
+            valor_historico = int(row['ATENDIMENTOS'])
+            paciente_historico = { "data": data, "valor_historico": valor_historico, "valor_previsao": None }
+            result.append(paciente_historico)
+        except:
+            continue
+    
+    for forecast_dt in forecast_df.iterrows():
+        try:
+            data = forecast_dt[1]['data']
+            valor_previsao = int(forecast_dt[1]['valor_previsao'])
+            paciente_previsao = { "data": data, "valor_historico": None, "valor_previsao": valor_previsao }
+            result.append(paciente_previsao)
+        except:
+            continue
+    return result
