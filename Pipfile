@@ -5,12 +5,13 @@ name = "pypi"
 
 [packages]
 pyqt5 = "*"
-pandas = "*"
 scikit-learn = "==1.3.*"
 xgboost = "*"
 seaborn = "*"
 matplotlib = "*"
 imblearn = "*"
+pyqtgraph= "*"
+statsmodels = "*"
 
 [dev-packages]
 

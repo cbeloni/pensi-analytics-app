@@ -4,3 +4,9 @@ __pycache__/
 confusion_matriz.png
 curva_roc.png
 __pycache__/tela_ui.cpython-312.pyc
+build/
+dist/
+.DS_Store
+temporal_graph.png
+confusion_matriz.png
+__pycache__/tela_ui.cpython-312.pyc
