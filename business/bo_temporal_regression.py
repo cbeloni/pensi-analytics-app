@@ -1,16 +1,23 @@
 import pandas as pd
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
+from utils.progress_modal import ProgressModal
+
 def load_df(file_path: str):
     df = pd.read_csv(file_path, sep='|')
     return df
 
 def treinar_modelo(file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade: int): 
+    progress = ProgressModal()
+    progress.show()
+    progress.set_progress(25, "Carregando dados...")
     df = load_df(file_path)
     # print(df.head().to_dict(orient='records'))
     df['DT_ATENDIMENTO'] = pd.to_datetime(df['DT_ATENDIMENTO'])
     df.set_index('DT_ATENDIMENTO', inplace=True)
     ts = df['ATENDIMENTOS']
+    
+    progress.set_progress(25, "Treinando modelo de previsão...")
     model = ExponentialSmoothing(ts, trend='add', seasonal='add', seasonal_periods=qtd_dias_sazonalidade).fit()
     forecast = model.forecast(steps=qtd_dias_previsao)
     forecast_df = pd.DataFrame({
@@ -18,6 +25,7 @@ def treinar_modelo(file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade
         'valor_previsao': forecast.values
     })
     result = []
+    progress.set_progress(25, "Gerando resultados...")
     for idx, row in df.iterrows():
         try:
             data = idx.strftime('%Y-%m-%d')
@@ -35,4 +43,7 @@ def treinar_modelo(file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade
             result.append(paciente_previsao)
         except:
             continue
+    
+    progress.set_progress(25, "Processamento concluído!")
+    progress.finalizar()
     return result
