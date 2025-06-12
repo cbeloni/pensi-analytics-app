@@ -10,6 +10,11 @@ class Ui_MainWindow(Ui_TemporalWindow):
         # Configurações iniciais da janela principal
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 900)
+        # Centraliza a janela na tela
+        qr = MainWindow.frameGeometry()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        MainWindow.move(qr.topLeft())
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -55,35 +60,53 @@ class Ui_MainWindow(Ui_TemporalWindow):
         self.csvLayout = QtWidgets.QHBoxLayout()
         self.textCsvPath = QtWidgets.QLineEdit(self.tabClassificacao)
         self.textCsvPath.setObjectName("textCsvPath")
+        self.textCsvPath.setPlaceholderText("Selecione um arquivo CSV...")
         self.buttonCsv = QtWidgets.QPushButton(self.tabClassificacao)
         self.buttonCsv.setObjectName("buttonCsv")
         self.csvLayout.addWidget(self.textCsvPath)
         self.csvLayout.addWidget(self.buttonCsv)
         self.mainLayout.addLayout(self.csvLayout)
 
-        # ==== Seleção do Modelo ====
-        self.modelLayout = QtWidgets.QHBoxLayout()
+        # ==== Seleção do Modelo e Variável Alvo (alinhados horizontalmente) ====
+        self.modelTargetLayout = QtWidgets.QHBoxLayout()
+
+        # Seleção do Modelo
         self.labelModelo = QtWidgets.QLabel(self.tabClassificacao)
         self.labelModelo.setObjectName("labelModelo")
         self.comboBoxModelo = QtWidgets.QComboBox(self.tabClassificacao)
         self.comboBoxModelo.setObjectName("comboBoxModelo")
         self.comboBoxModelo.addItems(["XGBoost", "Regressão Logística"])
         self.comboBoxModelo.setFixedWidth(180)
-        self.modelLayout.addWidget(self.labelModelo)
-        self.modelLayout.addWidget(self.comboBoxModelo)
-        self.modelLayout.addStretch()
-        self.mainLayout.addLayout(self.modelLayout)
 
-        # ==== Variável Alvo ====
-        self.targetLayout = QtWidgets.QVBoxLayout()
+        # Variável Alvo
         self.label_2 = QtWidgets.QLabel(self.tabClassificacao)
         self.label_2.setObjectName("label_2")
         self.textVariavelAlvo = QtWidgets.QLineEdit(self.tabClassificacao)
         self.textVariavelAlvo.setObjectName("textVariavelAlvo")
-        self.targetLayout.addWidget(self.label_2)
-        self.targetLayout.addWidget(self.textVariavelAlvo)
-        self.mainLayout.addLayout(self.targetLayout)
+        self.textVariavelAlvo.setFixedWidth(250)
 
+        # Adiciona widgets ao layout horizontal
+        self.modelTargetLayout.addWidget(self.labelModelo)
+        self.modelTargetLayout.addWidget(self.comboBoxModelo)
+        self.modelTargetLayout.addSpacing(30)
+        self.modelTargetLayout.addWidget(self.label_2)
+        self.modelTargetLayout.addWidget(self.textVariavelAlvo)
+        self.modelTargetLayout.addStretch()
+
+        self.mainLayout.addLayout(self.modelTargetLayout)
+        
+        # ==== Botão de Processamento ====
+        self.pushButton = QtWidgets.QPushButton(self.tabClassificacao)
+        self.pushButton.setObjectName("pushButton")
+        self.mainLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+
+
+        # ==== Separador ====
+        self.separator = QtWidgets.QFrame(self.tabClassificacao)
+        self.separator.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.mainLayout.addWidget(self.separator)
+        
         # ==== Sub-Abas de Resultados ====
         self.tabWidget = QtWidgets.QTabWidget(self.tabClassificacao)
         self.tabWidget.setObjectName("tabWidget")
@@ -98,11 +121,6 @@ class Ui_MainWindow(Ui_TemporalWindow):
         self.setupSubTabRoc()
 
         self.mainLayout.addWidget(self.tabWidget)
-
-        # ==== Botão de Processamento ====
-        self.pushButton = QtWidgets.QPushButton(self.tabClassificacao)
-        self.pushButton.setObjectName("pushButton")
-        self.mainLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Finaliza layout da aba
         self.classificacaoLayout.addLayout(self.mainLayout)
@@ -171,7 +189,7 @@ class Ui_MainWindow(Ui_TemporalWindow):
         """Define textos dos widgets"""
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Pensi Analytics APP"))
-        self.buttonCsv.setText(_translate("MainWindow", "Selecionar CSV"))
+        self.buttonCsv.setText(_translate("MainWindow", "Abrir CSV"))
         self.pushButton.setText(_translate("MainWindow", "Processar"))
         self.label_2.setText(_translate("MainWindow", "Defina a variável alvo"))
         self.labelModelo.setText(_translate("MainWindow", "Seleciona o Modelo"))
