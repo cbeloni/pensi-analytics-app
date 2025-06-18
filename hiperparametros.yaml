@@ -1,0 +1,2 @@
+xgboost: "{'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}"
+logistic_regression: "{'max_iter': 5000}"

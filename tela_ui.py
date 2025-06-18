@@ -1,7 +1,17 @@
 from PyQt5 import QtCore, QtWidgets
 from tela.temporal_ui import Ui_TemporalWindow
+import yaml
+import os
+
+yaml_path = os.getenv("HIPERPARAMS_YAML_PATH", os.path.join(os.path.dirname(__file__), "hiperparametros.yaml"))
+with open(yaml_path, "r", encoding="utf-8") as f:
+    hiperparams = yaml.safe_load(f)
+
+_HIPERPARAMS_XGB = str(hiperparams.get("xgboost", {}))
+_HIPERPARAMS_LOGISTIC = str(hiperparams.get("logistic_regression", {}))
 
 class Ui_MainWindow(Ui_TemporalWindow):
+    
     def __init__(self):
         super().__init__()
         Ui_TemporalWindow.__init__(self)
@@ -77,6 +87,7 @@ class Ui_MainWindow(Ui_TemporalWindow):
         self.comboBoxModelo.setObjectName("comboBoxModelo")
         self.comboBoxModelo.addItems(["XGBoost", "Regressão Logística"])
         self.comboBoxModelo.setFixedWidth(180)
+        self.comboBoxModelo.currentTextChanged.connect(self.change_model_action)
 
         # Variável Alvo
         self.label_2 = QtWidgets.QLabel(self.tabClassificacao)
@@ -84,6 +95,15 @@ class Ui_MainWindow(Ui_TemporalWindow):
         self.textVariavelAlvo = QtWidgets.QLineEdit(self.tabClassificacao)
         self.textVariavelAlvo.setObjectName("textVariavelAlvo")
         self.textVariavelAlvo.setFixedWidth(250)
+        
+        # Hiperparâmetros
+        self.labelHiperparam = QtWidgets.QLabel(self.tabClassificacao)
+        self.labelHiperparam.setObjectName("labelHiperparam")
+        self.labelHiperparam.setText("Hiperparâmetros")
+        self.textHiperparam = QtWidgets.QLineEdit(self.tabClassificacao)
+        self.textHiperparam.setObjectName("textHiperparam")
+        self.textHiperparam.setText(_HIPERPARAMS_XGB)
+        self.textHiperparam.setFixedWidth(250)
 
         # Adiciona widgets ao layout horizontal
         self.modelTargetLayout.addWidget(self.labelModelo)
@@ -91,6 +111,9 @@ class Ui_MainWindow(Ui_TemporalWindow):
         self.modelTargetLayout.addSpacing(30)
         self.modelTargetLayout.addWidget(self.label_2)
         self.modelTargetLayout.addWidget(self.textVariavelAlvo)
+        self.modelTargetLayout.addSpacing(30)
+        self.modelTargetLayout.addWidget(self.labelHiperparam)
+        self.modelTargetLayout.addWidget(self.textHiperparam)
         self.modelTargetLayout.addStretch()
 
         self.mainLayout.addLayout(self.modelTargetLayout)
@@ -204,9 +227,16 @@ class Ui_MainWindow(Ui_TemporalWindow):
 
         self.menuSair.setTitle(_translate("MainWindow", "Configurações"))
         self.actionSair.setText(_translate("MainWindow", "Sair"))
+    
+    def change_model_action(self, model_name):
+        if model_name == "XGBoost":
+            self.textHiperparam.setText(_HIPERPARAMS_XGB)
+        elif model_name == "Regressão Logística":
+            self.textHiperparam.setText(_HIPERPARAMS_LOGISTIC)
 
 if __name__ == '__main__':
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

@@ -5,12 +5,15 @@ from sklearn import metrics
 
 from business.bo_model import ModeloBase
 
+_HIPERPARAMETROS_DEFAULT = "{'max_iter': 5000}"
+
 class RegressaoLogistica(ModeloBase):
 
     def get_feature_importance(self, model, X):    
         return "Não disponível para Regressão Logística"
    
-    def processar(self, file, alvo, progress):
+    def processar(self, file, alvo, progress, **kwargs):
+        hiperametros = kwargs.get('hiperametros', None)
         progress.set_progress(10, "Carregando dados...")
         df = pd.read_csv(file, sep='|')
         #df.head()
@@ -30,7 +33,8 @@ class RegressaoLogistica(ModeloBase):
         X_train, y_train = self.over_sampling(X_train, y_train)
         
         progress.set_progress(20, "Treinando modelo Regressão logística...")
-        xgb_model = LogisticRegression()
+        params =  hiperametros or _HIPERPARAMETROS_DEFAULT
+        xgb_model = LogisticRegression(**params)
         xgb_model.fit(X_train, y_train)
         y_pred=xgb_model.predict(X_test)
         

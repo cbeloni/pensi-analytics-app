@@ -4,7 +4,7 @@ from business.bo_model_factory import modelo_factory
 from PyQt5.QtGui import QPixmap
 
 from utils.progress_modal import ProgressModal
-
+import ast
 
 class MainApp(QtWidgets.QMainWindow):
     def __init__(self):
@@ -26,11 +26,11 @@ class MainApp(QtWidgets.QMainWindow):
         
         variavel_alvo = self.ui.textVariavelAlvo.text()
         csv_path = self.ui.textCsvPath.text()
-        resultado = ""
-        feature_importance = ""
+        hiperametros_text = self.ui.textHiperparam.text()
+        hiperametros = ast.literal_eval(hiperametros_text) if hiperametros_text else {}
         try:
             model = modelo_factory(self.ui.comboBoxModelo.currentText())
-            resultado, feature_importance = model.processar(csv_path, variavel_alvo, progress)        
+            resultado, feature_importance = model.processar(csv_path, variavel_alvo, progress, hiperametros=hiperametros)        
         except Exception as e:
             resultado = f"Erro: {e}"
         

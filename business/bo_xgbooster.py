@@ -7,8 +7,10 @@ from sklearn import metrics
 from business.bo_model import ModeloBase
 from PyQt5.QtWidgets import QApplication
 
-class XgbBooster(ModeloBase):
+_HIPERPARAMETROS_DEFAULT = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}
 
+class XgbBooster(ModeloBase):
+    
     def get_feature_importance(self, xgb_model, X):    
         feature_importances = xgb_model.feature_importances_
         feature_importance_df = pd.DataFrame({'Feature': X.columns, 'Importance': feature_importances})
@@ -24,7 +26,9 @@ class XgbBooster(ModeloBase):
         
         return features_formated
    
-    def processar(self, file, alvo, progress):
+    def processar(self, file, alvo, progress, **kwargs):
+        
+        hiperametros = kwargs.get('hiperametros', None)
         df = pd.read_csv(file, sep='|')
         #df.head()
         progress.set_progress(10, "Carregando dados...")
@@ -44,7 +48,7 @@ class XgbBooster(ModeloBase):
         X_train, y_train = self.over_sampling(X_train, y_train)
         
         progress.set_progress(20, "Treinando modelo XGBoost...")
-        best_params = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}     
+        best_params = hiperametros or _HIPERPARAMETROS_DEFAULT
         xgb_model = XGBClassifier(**best_params, importance_type='weight')
         xgb_model.fit(X_train, y_train)
         y_pred=xgb_model.predict(X_test)
