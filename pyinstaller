@@ -1,1 +1,3 @@
 pyinstaller --windowed --hidden-import=xgboost --hidden-import=imblearn --collect-all xgboost --collect-submodules imblearn main.py
+
+pyinstaller --windowed --hidden-import=xgboost --hidden-import=imblearn --hidden-import=statsmodels --collect-all xgboost --collect-submodules imblearn --collect-all statsmodels main.py
