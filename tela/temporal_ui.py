@@ -71,7 +71,7 @@ class Ui_TemporalWindow(object):
         # Campo de imagem
         self.imageLabel = QtWidgets.QLabel(self.tabTemporal)
         self.imageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.imageLabel.setStyleSheet("background-color: white;")
+        # self.imageLabel.setStyleSheet("background-color: white;")
         self.imageLabel.setText("Nenhuma gráfico disponível.\nProcessar para gerar.")
 
         self.temporalLayout.addWidget(self.imageLabel)

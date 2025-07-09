@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
 from tela.temporal_ui import Ui_TemporalWindow
+from tela.regressao_linear_ui import Ui_RegressaoLinearWindow
 import yaml
 import os
 
@@ -10,11 +11,13 @@ with open(yaml_path, "r", encoding="utf-8") as f:
 _HIPERPARAMS_XGB = str(hiperparams.get("xgboost", {}))
 _HIPERPARAMS_LOGISTIC = str(hiperparams.get("logistic_regression", {}))
 
-class Ui_MainWindow(Ui_TemporalWindow):
+class Ui_MainWindow(Ui_TemporalWindow, Ui_RegressaoLinearWindow):
     
     def __init__(self):
         super().__init__()
         Ui_TemporalWindow.__init__(self)
+        Ui_RegressaoLinearWindow.__init__(self)
+        
     
     def setupUi(self, MainWindow):
         # Configurações iniciais da janela principal
@@ -39,9 +42,12 @@ class Ui_MainWindow(Ui_TemporalWindow):
         # ==== ABA: Temporal ====
         self.setupTemporalTab()
 
+        self.setupRegressaoLinearTab()
+
         # Adiciona as abas ao widget principal
         self.mainTabWidget.addTab(self.tabClassificacao, "Classificação")
         self.mainTabWidget.addTab(self.tabTemporal, "Temporal")
+        self.mainTabWidget.addTab(self.tabLinearRegressao, "Regressão Linear")
 
         # Centraliza o widget de abas
         layout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -224,6 +230,7 @@ class Ui_MainWindow(Ui_TemporalWindow):
 
         self.mainTabWidget.setTabText(self.mainTabWidget.indexOf(self.tabClassificacao), _translate("MainWindow", "Classificação"))
         self.mainTabWidget.setTabText(self.mainTabWidget.indexOf(self.tabTemporal), _translate("MainWindow", "Temporal"))
+        self.mainTabWidget.setTabText(self.mainTabWidget.indexOf(self.tabLinearRegressao), _translate("MainWindow", "Regressão Linear"))
 
         self.menuSair.setTitle(_translate("MainWindow", "Configurações"))
         self.actionSair.setText(_translate("MainWindow", "Sair"))

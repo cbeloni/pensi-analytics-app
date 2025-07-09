@@ -2,10 +2,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
-
+import statsmodels.api as sm 
 from business.bo_model import ModeloBase
 
-_HIPERPARAMETROS_DEFAULT = "{'max_iter': 5000}"
+_HIPERPARAMETROS_DEFAULT = {'max_iter': 5000}
 
 class RegressaoLogistica(ModeloBase):
 
@@ -17,7 +17,7 @@ class RegressaoLogistica(ModeloBase):
         progress.set_progress(10, "Carregando dados...")
         df = pd.read_csv(file, sep='|')
         #df.head()
-        df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int')
+        # df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int', drop_first=True)
 
         headers = list(df.columns)[2:]
         X = df[headers]
@@ -60,6 +60,15 @@ class RegressaoLogistica(ModeloBase):
 
         NPV = tn / (tn + fn)
         retorno += f'NPV: {NPV} \n'
+        
+        X_sm = sm.add_constant(X) # Adicionar o intercepto
+        logit_model_sm = sm.Logit(y, X_sm)
+        result_sm = logit_model_sm.fit(disp=0) # disp=0 para não imprimir o output de convergência
+        p_values = result_sm.pvalues
+        p_values.rename('P-Value', inplace=True)
+        
+        retorno += "\nP-Values:\n"
+        retorno += p_values.to_string()
         
         feature_importance_df = self.get_feature_importance(xgb_model, X)
         progress.set_progress(100, "Processamento concluído!")
