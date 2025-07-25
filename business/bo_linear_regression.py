@@ -10,14 +10,14 @@ class RegressaoLinear(ModeloBase):
     def get_feature_importance(self, model, X):    
         return "Não disponível para Regressão Logística"
    
-    def processar(self, file, alvo, progress, **kwargs):
+    def processar(self, file, alvo, variaveis, progress, **kwargs):
         progress.set_progress(30, "Carregando dados...")
         df = pd.read_csv(file, sep='|')
         #df.head()
         # df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int', drop_first=True)
 
-        headers = list(df.columns)[1:]
-        X = df[headers]
+        # headers = list(df.columns)[1:]
+        X = df[variaveis]
         y = df[alvo]  # internacao
         
         progress.set_progress(30, "Normalizando dados...")
