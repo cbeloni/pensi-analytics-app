@@ -7,15 +7,15 @@ def load_df(file_path: str):
     df = pd.read_csv(file_path, sep='|')
     return df
 
-def treinar_modelo(file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade: int): 
+def treinar_modelo(variavel: str, dependente: str, file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade: int): 
     progress = ProgressModal()
     progress.show()
     progress.set_progress(25, "Carregando dados...")
     df = load_df(file_path)
     # print(df.head().to_dict(orient='records'))
-    df['DT_ATENDIMENTO'] = pd.to_datetime(df['DT_ATENDIMENTO'])
-    df.set_index('DT_ATENDIMENTO', inplace=True)
-    ts = df['ATENDIMENTOS']
+    df[variavel] = pd.to_datetime(df[variavel])
+    df.set_index(variavel, inplace=True)
+    ts = df[dependente]
     
     progress.set_progress(25, "Treinando modelo de previsão...")
     model = ExponentialSmoothing(ts, trend='add', seasonal='add', seasonal_periods=qtd_dias_sazonalidade).fit()
@@ -29,7 +29,7 @@ def treinar_modelo(file_path: str, qtd_dias_previsao: int, qtd_dias_sazonalidade
     for idx, row in df.iterrows():
         try:
             data = idx.strftime('%Y-%m-%d')
-            valor_historico = int(row['ATENDIMENTOS'])
+            valor_historico = int(row[dependente])
             paciente_historico = { "data": data, "valor_historico": valor_historico, "valor_previsao": None }
             result.append(paciente_historico)
         except:

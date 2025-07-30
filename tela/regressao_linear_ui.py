@@ -84,6 +84,9 @@ class Ui_RegressaoLinearWindow(object):
 
         self.splitter.addWidget(self.centralWidget)
 
+        # Define tamanhos iguais para ambos os lados
+        self.splitter.setSizes([400, 600])
+
         self.RegressaoLinearLayout.addWidget(self.splitter)
 
         self.separator = QtWidgets.QFrame(self.tabLinearRegressao)

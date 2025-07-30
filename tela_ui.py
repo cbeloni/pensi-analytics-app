@@ -69,44 +69,79 @@ class Ui_MainWindow(Ui_TemporalWindow, Ui_RegressaoLinearWindow):
         self.tabClassificacao.setObjectName("tabClassificacao")
         self.classificacaoLayout = QtWidgets.QVBoxLayout(self.tabClassificacao)
 
-        # Layout principal da aba
-        self.mainLayout = QtWidgets.QVBoxLayout()
+        # Layout principal com QSplitter para separador móvel
+        self.splitterClassificacao = QtWidgets.QSplitter(QtCore.Qt.Horizontal, self.tabClassificacao)
+
+        # ==== Widget à esquerda ====
+        self.leftWidgetClassificacao = QtWidgets.QWidget()
+        self.leftLayoutClassificacao = QtWidgets.QVBoxLayout(self.leftWidgetClassificacao)
+        self.leftLayoutClassificacao.setContentsMargins(0, 0, 0, 0)
+
+        # Lista de variáveis com seleção múltipla
+        self.variaveisClassificacao = QtWidgets.QListWidget(self.leftWidgetClassificacao)
+        self.variaveisClassificacao.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.leftLayoutClassificacao.addWidget(self.variaveisClassificacao)
+        self.leftWidgetClassificacao.setMinimumWidth(160)
+
+        # Botões "Habilitar" e "Desabilitar" lado a lado
+        self.btnsLayoutClassificacao = QtWidgets.QHBoxLayout()
+        self.btnHabilitarClassificacao = QtWidgets.QPushButton("Habilitar", self.leftWidgetClassificacao)
+        self.btnDesabilitarClassificacao = QtWidgets.QPushButton("Desabilitar", self.leftWidgetClassificacao)
+        self.btnsLayoutClassificacao.addWidget(self.btnHabilitarClassificacao)
+        self.btnsLayoutClassificacao.addWidget(self.btnDesabilitarClassificacao)
+        self.leftLayoutClassificacao.addLayout(self.btnsLayoutClassificacao)
+
+        # Layout horizontal para botão e campo de texto (variável alvo)
+        self.rightOfVariaveisWidgetClassificacao = QtWidgets.QWidget()
+        self.rightOfVariaveisLayoutClassificacao = QtWidgets.QHBoxLayout(self.rightOfVariaveisWidgetClassificacao)
+        self.rightOfVariaveisLayoutClassificacao.setContentsMargins(0, 0, 0, 0)
+
+        self.btnAdicionarAlvoClassificacao = QtWidgets.QPushButton("Adicionar variável alvo", self.rightOfVariaveisWidgetClassificacao)
+        self.rightOfVariaveisLayoutClassificacao.addWidget(self.btnAdicionarAlvoClassificacao)
+
+        self.textVariavelAlvo = QtWidgets.QLineEdit(self.rightOfVariaveisWidgetClassificacao)
+        self.textVariavelAlvo.setObjectName("textVariavelAlvo")
+        self.textVariavelAlvo.setReadOnly(True)
+        self.rightOfVariaveisLayoutClassificacao.addWidget(self.textVariavelAlvo)
+
+        self.leftLayoutClassificacao.addWidget(self.rightOfVariaveisWidgetClassificacao)
+
+        self.splitterClassificacao.addWidget(self.leftWidgetClassificacao)
+
+        # ==== Widget à direita ====
+        self.rightWidgetClassificacao = QtWidgets.QWidget()
+        self.rightLayoutClassificacao = QtWidgets.QVBoxLayout(self.rightWidgetClassificacao)
+        self.rightLayoutClassificacao.setContentsMargins(0, 0, 0, 0)
 
         # ==== Seleção de CSV ====
         self.csvLayout = QtWidgets.QHBoxLayout()
-        self.textCsvPath = QtWidgets.QLineEdit(self.tabClassificacao)
+        self.textCsvPath = QtWidgets.QLineEdit(self.rightWidgetClassificacao)
         self.textCsvPath.setObjectName("textCsvPath")
         self.textCsvPath.setPlaceholderText("Selecione um arquivo CSV...")
-        self.buttonCsv = QtWidgets.QPushButton(self.tabClassificacao)
+        self.buttonCsv = QtWidgets.QPushButton("Selecionar CSV", self.rightWidgetClassificacao)
         self.buttonCsv.setObjectName("buttonCsv")
+        self.buttonCsv.clicked.connect(self.select_csv_file_classificacao)  # Conecta o botão
         self.csvLayout.addWidget(self.textCsvPath)
         self.csvLayout.addWidget(self.buttonCsv)
-        self.mainLayout.addLayout(self.csvLayout)
+        self.rightLayoutClassificacao.addLayout(self.csvLayout)
 
-        # ==== Seleção do Modelo e Variável Alvo (alinhados horizontalmente) ====
+        # ==== Seleção do Modelo e Hiperparâmetros ====
         self.modelTargetLayout = QtWidgets.QHBoxLayout()
 
         # Seleção do Modelo
-        self.labelModelo = QtWidgets.QLabel(self.tabClassificacao)
+        self.labelModelo = QtWidgets.QLabel(self.rightWidgetClassificacao)
         self.labelModelo.setObjectName("labelModelo")
-        self.comboBoxModelo = QtWidgets.QComboBox(self.tabClassificacao)
+        self.comboBoxModelo = QtWidgets.QComboBox(self.rightWidgetClassificacao)
         self.comboBoxModelo.setObjectName("comboBoxModelo")
         self.comboBoxModelo.addItems(["XGBoost", "Regressão Logística"])
         self.comboBoxModelo.setFixedWidth(180)
         self.comboBoxModelo.currentTextChanged.connect(self.change_model_action)
 
-        # Variável Alvo
-        self.label_2 = QtWidgets.QLabel(self.tabClassificacao)
-        self.label_2.setObjectName("label_2")
-        self.textVariavelAlvo = QtWidgets.QLineEdit(self.tabClassificacao)
-        self.textVariavelAlvo.setObjectName("textVariavelAlvo")
-        self.textVariavelAlvo.setFixedWidth(250)
-        
         # Hiperparâmetros
-        self.labelHiperparam = QtWidgets.QLabel(self.tabClassificacao)
+        self.labelHiperparam = QtWidgets.QLabel(self.rightWidgetClassificacao)
         self.labelHiperparam.setObjectName("labelHiperparam")
         self.labelHiperparam.setText("Hiperparâmetros")
-        self.textHiperparam = QtWidgets.QLineEdit(self.tabClassificacao)
+        self.textHiperparam = QtWidgets.QLineEdit(self.rightWidgetClassificacao)
         self.textHiperparam.setObjectName("textHiperparam")
         self.textHiperparam.setText(_HIPERPARAMS_XGB)
         self.textHiperparam.setFixedWidth(250)
@@ -115,27 +150,34 @@ class Ui_MainWindow(Ui_TemporalWindow, Ui_RegressaoLinearWindow):
         self.modelTargetLayout.addWidget(self.labelModelo)
         self.modelTargetLayout.addWidget(self.comboBoxModelo)
         self.modelTargetLayout.addSpacing(30)
-        self.modelTargetLayout.addWidget(self.label_2)
-        self.modelTargetLayout.addWidget(self.textVariavelAlvo)
-        self.modelTargetLayout.addSpacing(30)
         self.modelTargetLayout.addWidget(self.labelHiperparam)
         self.modelTargetLayout.addWidget(self.textHiperparam)
         self.modelTargetLayout.addStretch()
 
-        self.mainLayout.addLayout(self.modelTargetLayout)
-        
-        # ==== Botão de Processamento ====
-        self.pushButton = QtWidgets.QPushButton(self.tabClassificacao)
-        self.pushButton.setObjectName("pushButton")
-        self.mainLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.rightLayoutClassificacao.addLayout(self.modelTargetLayout)
 
+        # ==== Botão de Processamento ====
+        self.pushButton = QtWidgets.QPushButton("Processar", self.rightWidgetClassificacao)
+        self.pushButton.setObjectName("pushButton")
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.addStretch()
+        btn_layout.addWidget(self.pushButton)
+        btn_layout.addStretch()
+        self.rightLayoutClassificacao.addLayout(btn_layout)
+
+        self.splitterClassificacao.addWidget(self.rightWidgetClassificacao)
+
+        # Define tamanhos iguais para ambos os lados
+        self.splitterClassificacao.setSizes([400, 600])
+
+        self.classificacaoLayout.addWidget(self.splitterClassificacao)
 
         # ==== Separador ====
         self.separator = QtWidgets.QFrame(self.tabClassificacao)
         self.separator.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.separator.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.mainLayout.addWidget(self.separator)
-        
+        self.classificacaoLayout.addWidget(self.separator)
+
         # ==== Sub-Abas de Resultados ====
         self.tabWidget = QtWidgets.QTabWidget(self.tabClassificacao)
         self.tabWidget.setObjectName("tabWidget")
@@ -149,11 +191,15 @@ class Ui_MainWindow(Ui_TemporalWindow, Ui_RegressaoLinearWindow):
         # Sub-aba: Curva ROC
         self.setupSubTabRoc()
 
-        self.mainLayout.addWidget(self.tabWidget)
+        self.classificacaoLayout.addWidget(self.tabWidget)
 
         # Finaliza layout da aba
-        self.classificacaoLayout.addLayout(self.mainLayout)
         self.tabClassificacao.setLayout(self.classificacaoLayout)
+
+        # Conecta os botões
+        self.btnAdicionarAlvoClassificacao.clicked.connect(self.adicionar_alvo_action)
+        self.btnDesabilitarClassificacao.clicked.connect(self.desabilitar_variaveis_classificacao_action)
+        self.btnHabilitarClassificacao.clicked.connect(self.habilitar_variaveis_classificacao_action)
 
     def setupSubTabResultado(self):
         self.tabResultado = QtWidgets.QWidget()
@@ -220,7 +266,7 @@ class Ui_MainWindow(Ui_TemporalWindow, Ui_RegressaoLinearWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Pensi Analytics APP"))
         self.buttonCsv.setText(_translate("MainWindow", "Abrir CSV"))
         self.pushButton.setText(_translate("MainWindow", "Processar"))
-        self.label_2.setText(_translate("MainWindow", "Defina a variável alvo"))
+        # self.label_2.setText(_translate("MainWindow", "Defina a variável alvo"))
         self.labelModelo.setText(_translate("MainWindow", "Seleciona o Modelo"))
 
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabResultado), _translate("MainWindow", "Resultado"))
@@ -240,6 +286,52 @@ class Ui_MainWindow(Ui_TemporalWindow, Ui_RegressaoLinearWindow):
             self.textHiperparam.setText(_HIPERPARAMS_XGB)
         elif model_name == "Regressão Logística":
             self.textHiperparam.setText(_HIPERPARAMS_LOGISTIC)
+
+    def adicionar_alvo_action(self):
+        selected_items = self.variaveisClassificacao.selectedItems()
+        
+        if hasattr(self, 'VAR_ALVO_CLASSIFICACAO') and self.VAR_ALVO_CLASSIFICACAO:
+            self.variaveisClassificacao.addItem(self.VAR_ALVO_CLASSIFICACAO)
+            self.VAR_ALVO_CLASSIFICACAO = ""
+        
+        if selected_items:
+            self.VAR_ALVO_CLASSIFICACAO = selected_items[0].text()
+            self.textVariavelAlvo.setText(self.VAR_ALVO_CLASSIFICACAO)
+            self.variaveisClassificacao.takeItem(self.variaveisClassificacao.row(selected_items[0]))
+
+    def desabilitar_variaveis_classificacao_action(self):
+        selected_items = self.variaveisClassificacao.selectedItems()
+        if selected_items:
+            for item in selected_items:
+                if " (disabled)" not in item.text():
+                    item.setText(f"{item.text()} (disabled)")
+
+    def habilitar_variaveis_classificacao_action(self):
+        selected_items = self.variaveisClassificacao.selectedItems()
+        if selected_items:
+            for item in selected_items:
+                item.setText(item.text().replace(" (disabled)", ""))
+
+    def get_header_csv_classificacao(self, file_path):
+        """Obtém o cabeçalho do CSV para exibir no campo de variáveis."""
+        if not os.path.exists(file_path):
+            return []
+        
+        with open(file_path, 'r', encoding='utf-8') as file:
+            header = file.readline().strip().split('|')
+        return header
+
+    def select_csv_file_classificacao(self):
+        file_dialog = QtWidgets.QFileDialog()
+        file_path, _ = file_dialog.getOpenFileName(
+            None, "Selecionar arquivo CSV", "", "CSV Files (*.csv)"
+        )
+        if file_path:
+            self.textCsvPath.setText(file_path)
+            # Limpa a lista antes de adicionar novas variáveis
+            self.variaveisClassificacao.clear()
+            variaveis_header = self.get_header_csv_classificacao(file_path)
+            self.variaveisClassificacao.addItems(variaveis_header)
 
 if __name__ == '__main__':
     import sys
