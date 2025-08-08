@@ -1,3 +1,4 @@
+import sys
 from PyQt5 import QtWidgets
 from tela_ui import Ui_MainWindow
 from business.bo_model_factory import modelo_factory
@@ -5,6 +6,7 @@ from PyQt5.QtGui import QPixmap
 
 from utils.progress_modal import ProgressModal
 import ast
+from utils.modal_message_ui import MessageModal
 
 class MainApp(QtWidgets.QMainWindow):
     def __init__(self):
@@ -14,7 +16,10 @@ class MainApp(QtWidgets.QMainWindow):
         self.setup_connections()
 
     def setup_connections(self):
-        self.ui.pushButton.clicked.connect(self.processar)
+        try:
+            self.ui.pushButton.clicked.connect(self.processar)
+        except Exception as e:
+            MessageModal(f"Erro ao processar modelo: {e}").exec_()
         # self.ui.buttonCsv.clicked.connect(self.select_csv_file)
 
     def processar(self):
@@ -32,8 +37,12 @@ class MainApp(QtWidgets.QMainWindow):
             model = modelo_factory(self.ui.comboBoxModelo.currentText())
             resultado, feature_importance = model.processar(csv_path, variavel_alvo, progress, hiperametros=hiperametros)        
         except Exception as e:
-            resultado = f"Erro: {e}"
-        
+            error_message = str(e)[:500]
+            MessageModal(f"Erro ao processar modelo: {error_message}").exec_()
+            self.ui.pushButton.setEnabled(True)
+            progress.finalizar()
+            return
+
         progress.finalizar()
         self.ui.textResultado.setPlainText(resultado)
         self.ui.textFeature.setPlainText(feature_importance)
