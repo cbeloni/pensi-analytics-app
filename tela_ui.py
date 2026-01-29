@@ -3,11 +3,16 @@ from tela.temporal_ui import Ui_TemporalWindow
 from tela.regressao_linear_ui import Ui_RegressaoLinearWindow
 import yaml
 import os
+import logging
 
-yaml_path = os.getenv("HIPERPARAMS_YAML_PATH", os.path.join(os.path.dirname(__file__), "hiperparametros.yaml"))
-with open(yaml_path, "r", encoding="utf-8") as f:
-    hiperparams = yaml.safe_load(f)
-
+hiperparams = {}
+try:
+    yaml_path = os.getenv("HIPERPARAMS_YAML_PATH", os.path.join(os.path.dirname(__file__), "hiperparametros.yaml"))
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        hiperparams = yaml.safe_load(f)
+except FileNotFoundError:
+    logging.error(f"Arquivo de hiperparâmetros não encontrado: {yaml_path}")
+    
 _HIPERPARAMS_XGB = str(hiperparams.get("xgboost", {}))
 _HIPERPARAMS_LOGISTIC = str(hiperparams.get("logistic_regression", {}))
 
