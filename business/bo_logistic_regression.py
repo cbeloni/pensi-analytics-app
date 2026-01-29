@@ -20,11 +20,12 @@ class RegressaoLogistica(ModeloBase):
         # df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int', drop_first=True)
 
         headers = list(df.columns)[2:]
+        headers = [col for col in headers if col != alvo]
         X = df[headers]
         y = df[alvo]  # internacao
         
         progress.set_progress(10, "Normalizando dados...")
-        self.normalizar(X)
+        # self.normalizar(X)
         
         progress.set_progress(10, "Dividindo dados em treino e teste...")
         X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.25,random_state=0)

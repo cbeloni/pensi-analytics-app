@@ -1,11 +1,9 @@
-import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn import metrics
 
 from business.bo_model import ModeloBase
-from PyQt5.QtWidgets import QApplication
 
 _HIPERPARAMETROS_DEFAULT = {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 9, 'n_estimators': 200, 'subsample': 1.0}
 
@@ -32,14 +30,24 @@ class XgbBooster(ModeloBase):
         df = pd.read_csv(file, sep='|')
         #df.head()
         progress.set_progress(10, "Carregando dados...")
-        df = pd.get_dummies(df, columns=["TP_SEXO", "DS_CID"], dtype='int')
+        
+        # Verificar se as colunas existem antes de fazer dummies
+        columns_to_dummy = []
+        if "TP_SEXO" in df.columns:
+            columns_to_dummy.append("TP_SEXO")
+        if "DS_CID" in df.columns:
+            columns_to_dummy.append("DS_CID")
+        
+        if columns_to_dummy:
+            df = pd.get_dummies(df, columns=columns_to_dummy, dtype='int')
 
         headers = list(df.columns)[2:]
+        headers = [col for col in headers if col != alvo]
         X = df[headers]
         y = df[alvo]  # internacao
         
         progress.set_progress(10, "Normalizando dados...")
-        self.normalizar(X)
+        # self.normalizar(X)
         
         progress.set_progress(10, "Dividindo dados em treino e teste...")
         X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.25,random_state=0)
